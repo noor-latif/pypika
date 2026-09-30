@@ -610,8 +610,11 @@ class Tuple(Criterion):
 class Array(Tuple):
     def get_sql(self, **kwargs: Any) -> str:
         dialect = kwargs.get("dialect", None)
-        values = ",".join(term.get_sql(**kwargs) for term in self.values)
-        sql = ("ARRAY[{}]" if dialect in (Dialects.POSTGRESQL, Dialects.REDSHIFT) else "[{}]").format(values)
+        if not self.values and dialect in (Dialects.POSTGRESQL, Dialects.REDSHIFT):
+            sql = format_quotes("{}", kwargs.get("secondary_quote_char") or "'")
+        else:
+            values = ",".join(term.get_sql(**kwargs) for term in self.values)
+            sql = ("ARRAY[{}]" if dialect in (Dialects.POSTGRESQL, Dialects.REDSHIFT) else "[{}]").format(values)
         return format_alias_sql(sql, self.alias, **kwargs)
 
 
