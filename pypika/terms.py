@@ -1,7 +1,7 @@
 import inspect
 import re
 import uuid
-from datetime import date
+from datetime import date, time
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
@@ -443,7 +443,7 @@ class ValueWrapper(Term):
             return value.get_sql(**kwargs)
         if isinstance(value, Enum):
             return cls.get_formatted_value(value.value, **kwargs)
-        if isinstance(value, date):
+        if isinstance(value, (date, time)):
             return cls.get_formatted_value(value.isoformat(), **kwargs)
         if isinstance(value, str):
             value = value.replace(quote_char, quote_char * 2)
